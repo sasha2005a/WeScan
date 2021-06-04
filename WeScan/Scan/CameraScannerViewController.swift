@@ -170,6 +170,7 @@ extension CameraScannerViewController: RectangleDetectionDelegateProtocol {
                                didCapturePicture picture: UIImage,
                                withQuad quad: Quadrilateral?) {
         delegate?.captureImageSuccess(image: picture, withQuad: quad)
+        captureSessionManager.start()
     }
     
     func captureSessionManager(_ captureSessionManager: CaptureSessionManager,
