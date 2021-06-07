@@ -155,6 +155,12 @@ public final class CameraScannerViewController: UIViewController {
     public func toggleAutoScan() {
         isAutoScanEnabled.toggle()
     }
+    
+    public func setRecognitionEnabled(_ enabled: Bool) {
+        UIView.animate(withDuration: 0.5) {
+            self.quadView.alpha = enabled ? 1 : 0
+        }
+    }
 }
 
 extension CameraScannerViewController: RectangleDetectionDelegateProtocol {
