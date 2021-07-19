@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-extension CGPoint {
+public extension CGPoint {
     
     /// Returns a rectangle of a given size surounding the point.
     ///
