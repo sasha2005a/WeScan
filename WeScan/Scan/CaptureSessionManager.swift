@@ -297,7 +297,7 @@ extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
     /// This function is necessary because the capture functions for iOS 10 and 11 are decoupled.
     private func completeImageCapture(with imageData: Data) {
         DispatchQueue.global(qos: .background).async { [weak self] in
-            CaptureSession.current.isEditing = true
+            //CaptureSession.current.isEditing = true
             guard let image = UIImage(data: imageData) else {
                 let error = ImageScannerControllerError.capture
                 DispatchQueue.main.async {
