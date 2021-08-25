@@ -34,4 +34,7 @@ final class CaptureSession {
         self.editImageOrientation = editImageOrientation
     }
     
+    func hasFlash() -> Bool? {
+        return device?.isFlashAvailable
+    }
 }

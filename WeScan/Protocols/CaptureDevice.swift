@@ -13,6 +13,9 @@ protocol CaptureDevice: class {
     var torchMode: AVCaptureDevice.TorchMode { get set }
     var isTorchAvailable: Bool { get }
     
+    var flashMode: AVCaptureDevice.FlashMode { get set }
+    var isFlashAvailable: Bool { get }
+    
     var focusMode: AVCaptureDevice.FocusMode { get set }
     var focusPointOfInterest: CGPoint { get set }
     var isFocusPointOfInterestSupported: Bool { get }
@@ -34,6 +37,9 @@ extension AVCaptureDevice: CaptureDevice { }
 final class MockCaptureDevice: CaptureDevice {
     var torchMode: AVCaptureDevice.TorchMode = .off
     var isTorchAvailable: Bool = true
+    
+    var flashMode: AVCaptureDevice.FlashMode = .auto
+    var isFlashAvailable: Bool = true
     
     var focusMode: AVCaptureDevice.FocusMode = .continuousAutoFocus
     var focusPointOfInterest: CGPoint = .zero

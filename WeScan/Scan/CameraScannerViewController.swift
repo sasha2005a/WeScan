@@ -41,6 +41,7 @@ public final class CameraScannerViewController: UIViewController {
     
     /// Whether flash is enabled
     private var flashEnabled = false
+    private var flashMode: AVCaptureDevice.FlashMode = .auto
     
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -137,18 +138,19 @@ public final class CameraScannerViewController: UIViewController {
     }
     
     public func capture() {
-        captureSessionManager?.capturePhoto()
+        captureSessionManager?.capturePhoto(flashMode: flashMode)
     }
     
     public func toggleFlash() {
-        let state = CaptureSession.current.toggleFlash()
-        switch state {
-        case .on:
-            flashEnabled = true
-        case .off:
-            flashEnabled = false
-        case .unknown, .unavailable:
-            flashEnabled = false
+        flashMode = CaptureSession.current.toggleFlash(current: flashMode) ?? .off
+        
+        switch flashMode {
+            case .on:
+                flashEnabled = true
+            case .off:
+                flashEnabled = false
+            case .auto:
+                flashEnabled = true
         }
     }
 

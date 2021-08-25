@@ -61,6 +61,9 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     /// The minimum number of time required by `noRectangleCount` to validate that no rectangles have been found.
     private let noRectangleThreshold = 3
     
+    private var lastFlashMode: AVCaptureDevice.FlashMode = .auto
+
+    
     // MARK: Life Cycle
     
     init?(videoPreviewLayer: AVCaptureVideoPreviewLayer, delegate: RectangleDetectionDelegateProtocol? = nil) {
@@ -157,7 +160,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         captureSession.stopRunning()
     }
     
-    internal func capturePhoto() {
+    internal func capturePhoto(flashMode: AVCaptureDevice.FlashMode) {
         guard let connection = photoOutput.connection(with: .video), connection.isEnabled, connection.isActive else {
             let error = ImageScannerControllerError.capture
             delegate?.captureSessionManager(self, didFailWithError: error)
@@ -167,6 +170,8 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = true
+        photoSettings.flashMode = flashMode
+        lastFlashMode = flashMode
         photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     
@@ -205,7 +210,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
                 let shouldAutoScan = (result == .showAndAutoScan)
                 strongSelf.displayRectangleResult(rectangleResult: RectangleDetectorResult(rectangle: rectangle, imageSize: imageSize))
                 if shouldAutoScan, CaptureSession.current.isAutoScanEnabled, !CaptureSession.current.isEditing {
-                    capturePhoto()
+                    capturePhoto(flashMode: lastFlashMode)
                 }
             }
             

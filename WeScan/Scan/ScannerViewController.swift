@@ -23,6 +23,7 @@ public final class ScannerViewController: UIViewController {
         
     /// Whether flash is enabled
     private var flashEnabled = false
+    private var flashMode: AVCaptureDevice.FlashMode = .auto
     
     /// The original bar style that was set by the host app
     private var originalBarStyle: UIBarStyle?
@@ -229,7 +230,7 @@ public final class ScannerViewController: UIViewController {
     @objc private func captureImage(_ sender: UIButton) {
         (navigationController as? ImageScannerController)?.flashToBlack()
         shutterButton.isUserInteractionEnabled = false
-        captureSessionManager?.capturePhoto()
+        captureSessionManager?.capturePhoto(flashMode: flashMode)
     }
     
     @objc private func toggleAutoScan() {
@@ -243,12 +244,13 @@ public final class ScannerViewController: UIViewController {
     }
     
     @objc private func toggleFlash() {
-        let state = CaptureSession.current.toggleFlash()
+        flashMode = CaptureSession.current.toggleFlash(current: flashMode) ?? .off
         
         let flashImage = UIImage(systemName: "bolt.fill", named: "flash", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         let flashOffImage = UIImage(systemName: "bolt.slash.fill", named: "flashUnavailable", in: Bundle(for: ScannerViewController.self), compatibleWith: nil)
         
-        switch state {
+       
+        switch flashMode {
         case .on:
             flashEnabled = true
             flashButton.image = flashImage
@@ -257,10 +259,10 @@ public final class ScannerViewController: UIViewController {
             flashEnabled = false
             flashButton.image = flashImage
             flashButton.tintColor = .white
-        case .unknown, .unavailable:
-            flashEnabled = false
-            flashButton.image = flashOffImage
-            flashButton.tintColor = UIColor.lightGray
+        case .auto:
+            flashEnabled = true
+            flashButton.image = flashImage
+            flashButton.tintColor = .yellow
         }
     }
     

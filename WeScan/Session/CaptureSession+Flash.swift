@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 /// Extension to CaptureSession to manage the device flashlight
 extension CaptureSession {
@@ -14,32 +15,24 @@ extension CaptureSession {
     enum FlashState {
         case on
         case off
+        case auto
         case unavailable
         case unknown
     }
     
     /// Toggles the current device's flashlight on or off.
-    func toggleFlash() -> FlashState {
-        guard let device = device, device.isTorchAvailable else { return .unavailable }
-        
-        do {
-            try device.lockForConfiguration()
-        } catch {
-            return .unknown
-        }
-        
-        defer {
-            device.unlockForConfiguration()
-        }
-        
-        if device.torchMode == .on {
-            device.torchMode = .off
-            return .off
-        } else if device.torchMode == .off {
-            device.torchMode = .on
+    func toggleFlash(current: AVCaptureDevice.FlashMode) -> AVCaptureDevice.FlashMode? {
+        if current == .on {
+         //   device.flashMode = .auto
+            return .auto
+        } else if current == .off {
+           // device.flashMode = .on
             return .on
+        } else if current == .auto {
+            //device.flashMode = .off
+            return .off
         }
         
-        return .unknown
+        return nil
     }
 }
