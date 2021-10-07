@@ -42,7 +42,8 @@ public final class CameraScannerViewController: UIViewController {
     /// Whether flash is enabled
     private var flashEnabled = false
     private var flashMode: AVCaptureDevice.FlashMode = .auto
-    
+    private var device: AVCaptureDevice?
+
     override public func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -84,6 +85,44 @@ public final class CameraScannerViewController: UIViewController {
         captureSessionManager?.delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(subjectAreaDidChange), name: Notification.Name.AVCaptureDeviceSubjectAreaDidChange, object: nil)
+
+        self.device = self.captureSessionManager?.device
+        let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(self.pinch(_:)))
+        self.quadView.addGestureRecognizer(pinchRecognizer)
+    }
+
+    private let minimumZoom: CGFloat = 1.0
+    private let maximumZoom: CGFloat = 3.0
+    private var lastZoomFactor: CGFloat = 1.0
+
+    @objc func pinch(_ pinch: UIPinchGestureRecognizer) {
+        guard let device = device else { return }
+
+        // Return zoom value between the minimum and maximum zoom values
+        func minMaxZoom(_ factor: CGFloat) -> CGFloat {
+            return min(min(max(factor, minimumZoom), maximumZoom), device.activeFormat.videoMaxZoomFactor)
+        }
+
+        func update(scale factor: CGFloat) {
+            do {
+                try device.lockForConfiguration()
+                defer { device.unlockForConfiguration() }
+                device.videoZoomFactor = factor
+            } catch {
+                print("\(error.localizedDescription)")
+            }
+        }
+
+        let newScaleFactor = minMaxZoom(pinch.scale * lastZoomFactor)
+
+        switch pinch.state {
+            case .began: fallthrough
+            case .changed: update(scale: newScaleFactor)
+            case .ended:
+                lastZoomFactor = minMaxZoom(newScaleFactor)
+                update(scale: lastZoomFactor)
+            default: break
+        }
     }
     
     private func setupConstraints() {

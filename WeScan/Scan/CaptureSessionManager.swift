@@ -49,9 +49,10 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     private let captureSession = AVCaptureSession()
     private let rectangleFunnel = RectangleFeaturesFunnel()
     weak var delegate: RectangleDetectionDelegateProtocol?
+    weak var device: AVCaptureDevice?
     private var displayedRectangleResult: RectangleDetectorResult?
     private var photoOutput = AVCapturePhotoOutput()
-    
+
     /// Whether the CaptureSessionManager should be detecting quadrilaterals.
     private var isDetecting = true
     
@@ -62,7 +63,6 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
     private let noRectangleThreshold = 3
     
     private var lastFlashMode: AVCaptureDevice.FlashMode = .auto
-
     
     // MARK: Life Cycle
     
@@ -80,6 +80,8 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
             delegate?.captureSessionManager(self, didFailWithError: error)
             return nil
         }
+
+        self.device = device
         
         captureSession.beginConfiguration()
         
@@ -101,6 +103,8 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
                 delegate?.captureSessionManager(self, didFailWithError: error)
                 return
         }
+
+
         
         do {
             try device.lockForConfiguration()
