@@ -168,7 +168,7 @@ public final class CameraScannerViewController: UIViewController {
         focusRectangle = FocusRectangleView(touchPoint: touchPoint)
         focusRectangle.setBorder(color: UIColor.white.cgColor)
         view.addSubview(focusRectangle)
-        focusRectangleTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(subjectAreaDidChange), userInfo: nil, repeats: false)
+        focusRectangleTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(subjectAreaDidChange), userInfo: nil, repeats: false)
         
         do {
             try CaptureSession.current.setFocusPointToTapPoint(convertedTouchPoint)
