@@ -39,7 +39,10 @@ public final class CameraScannerViewController: UIViewController {
     
     /// The view that draws the detected rectangles.
     private let quadView = QuadrilateralView()
-    
+
+    /// The view that draws the detected rectangles.
+    private let pinchView = UIView()
+
     /// Whether flash is enabled
     private var flashEnabled = false
     private var flashMode: AVCaptureDevice.FlashMode = .auto
@@ -80,6 +83,8 @@ public final class CameraScannerViewController: UIViewController {
         quadView.translatesAutoresizingMaskIntoConstraints = false
         quadView.editable = false
         view.addSubview(quadView)
+        pinchView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pinchView)
         setupConstraints()
         
         captureSessionManager = CaptureSessionManager(videoPreviewLayer: videoPreviewLayer)
@@ -89,7 +94,7 @@ public final class CameraScannerViewController: UIViewController {
 
         self.device = self.captureSessionManager?.device
         let pinchRecognizer = UIPinchGestureRecognizer(target: self, action:#selector(self.pinch(_:)))
-        self.quadView.addGestureRecognizer(pinchRecognizer)
+        self.pinchView.addGestureRecognizer(pinchRecognizer)
     }
 
     private let minimumZoom: CGFloat = 1.0
@@ -136,6 +141,16 @@ public final class CameraScannerViewController: UIViewController {
             quadView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         ]
         NSLayoutConstraint.activate(quadViewConstraints)
+
+        var pinchViewConstraints = [NSLayoutConstraint]()
+
+        pinchViewConstraints = [
+            pinchView.topAnchor.constraint(equalTo: view.topAnchor),
+            view.bottomAnchor.constraint(equalTo: pinchView.bottomAnchor),
+            view.trailingAnchor.constraint(equalTo: pinchView.trailingAnchor),
+            pinchView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+        ]
+        NSLayoutConstraint.activate(pinchViewConstraints)
     }
     
     /// Called when the AVCaptureDevice detects that the subject area has changed significantly. When it's called, we reset the focus so the camera is no longer out of focus.
