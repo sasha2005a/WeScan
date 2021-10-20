@@ -35,6 +35,7 @@ public final class CameraScannerViewController: UIViewController {
     
     /// The view that shows the focus rectangle (when the user taps to focus, similar to the Camera app)
     private var focusRectangle: FocusRectangleView!
+    private var focusRectangleTimer: Timer?
     
     /// The view that draws the detected rectangles.
     private let quadView = QuadrilateralView()
@@ -161,10 +162,13 @@ public final class CameraScannerViewController: UIViewController {
         let convertedTouchPoint: CGPoint = videoPreviewLayer.captureDevicePointConverted(fromLayerPoint: touchPoint)
         
         CaptureSession.current.removeFocusRectangleIfNeeded(focusRectangle, animated: false)
-        
+
+        focusRectangleTimer?.invalidate()
+        focusRectangleTimer = nil
         focusRectangle = FocusRectangleView(touchPoint: touchPoint)
         focusRectangle.setBorder(color: UIColor.white.cgColor)
         view.addSubview(focusRectangle)
+        focusRectangleTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(subjectAreaDidChange), userInfo: nil, repeats: false)
         
         do {
             try CaptureSession.current.setFocusPointToTapPoint(convertedTouchPoint)
