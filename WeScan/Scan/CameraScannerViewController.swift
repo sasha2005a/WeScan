@@ -51,6 +51,12 @@ public final class CameraScannerViewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+
+        if let camera = AVCaptureDevice.default(for: AVMediaType.video), camera.hasFlash {
+            flashMode = .auto
+        } else {
+            flashMode = .off
+        }
     }
     
     override public func viewWillAppear(_ animated: Bool) {
@@ -122,12 +128,12 @@ public final class CameraScannerViewController: UIViewController {
         let newScaleFactor = minMaxZoom(pinch.scale * lastZoomFactor)
 
         switch pinch.state {
-            case .began: fallthrough
-            case .changed: update(scale: newScaleFactor)
-            case .ended:
-                lastZoomFactor = minMaxZoom(newScaleFactor)
-                update(scale: lastZoomFactor)
-            default: break
+        case .began: fallthrough
+        case .changed: update(scale: newScaleFactor)
+        case .ended:
+            lastZoomFactor = minMaxZoom(newScaleFactor)
+            update(scale: lastZoomFactor)
+        default: break
         }
     }
     
@@ -203,12 +209,12 @@ public final class CameraScannerViewController: UIViewController {
         flashMode = CaptureSession.current.toggleFlash(current: flashMode) ?? .off
         
         switch flashMode {
-            case .on:
-                flashEnabled = true
-            case .off:
-                flashEnabled = false
-            case .auto:
-                flashEnabled = true
+        case .on:
+            flashEnabled = true
+        case .off:
+            flashEnabled = false
+        case .auto:
+            flashEnabled = true
         }
     }
 
