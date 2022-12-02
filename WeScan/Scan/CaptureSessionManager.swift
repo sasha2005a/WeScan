@@ -164,7 +164,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         captureSession.stopRunning()
     }
     
-    internal func capturePhoto(flashMode: AVCaptureDevice.FlashMode) {
+    internal func capturePhoto(flashMode: AVCaptureDevice.FlashMode?) {
         guard let connection = photoOutput.connection(with: .video), connection.isEnabled, connection.isActive else {
             let error = ImageScannerControllerError.capture
             delegate?.captureSessionManager(self, didFailWithError: error)
@@ -174,8 +174,12 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = true
-        photoSettings.flashMode = flashMode
-        lastFlashMode = flashMode
+		if let flashMode = flashMode {
+			photoSettings.flashMode = flashMode
+			lastFlashMode = flashMode
+		} else {
+			photoSettings.flashMode = .off
+		}
         photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
     
@@ -269,7 +273,7 @@ extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
         
         isDetecting = false
         rectangleFunnel.currentAutoScanPassCount = 0
-        delegate?.didStartCapturingPicture(for: self)
+//        delegate?.didStartCapturingPicture(for: self)
         
         if let sampleBuffer = photoSampleBuffer,
             let imageData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: sampleBuffer, previewPhotoSampleBuffer: nil) {
@@ -291,7 +295,7 @@ extension CaptureSessionManager: AVCapturePhotoCaptureDelegate {
         
         isDetecting = false
         rectangleFunnel.currentAutoScanPassCount = 0
-        delegate?.didStartCapturingPicture(for: self)
+//        delegate?.didStartCapturingPicture(for: self)
         
         if let imageData = photo.fileDataRepresentation() {
             completeImageCapture(with: imageData)
