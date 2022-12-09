@@ -230,7 +230,7 @@ public final class ScannerViewController: UIViewController {
     @objc private func captureImage(_ sender: UIButton) {
         (navigationController as? ImageScannerController)?.flashToBlack()
         shutterButton.isUserInteractionEnabled = false
-        captureSessionManager?.capturePhoto(flashMode: flashMode)
+        captureSessionManager?.capturePhoto(flashMode: flashMode, torchIsOn: false)
     }
     
     @objc private func toggleAutoScan() {

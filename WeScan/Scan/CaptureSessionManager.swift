@@ -164,7 +164,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         captureSession.stopRunning()
     }
     
-    internal func capturePhoto(flashMode: AVCaptureDevice.FlashMode?) {
+	internal func capturePhoto(flashMode: AVCaptureDevice.FlashMode?, torchIsOn: Bool) {
         guard let connection = photoOutput.connection(with: .video), connection.isEnabled, connection.isActive else {
             let error = ImageScannerControllerError.capture
             delegate?.captureSessionManager(self, didFailWithError: error)
@@ -174,7 +174,8 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.isHighResolutionPhotoEnabled = true
         photoSettings.isAutoStillImageStabilizationEnabled = true
-		if let flashMode = flashMode {
+		if let flashMode = flashMode,
+		   !torchIsOn {
 			photoSettings.flashMode = flashMode
 			lastFlashMode = flashMode
 		} else {
@@ -218,7 +219,7 @@ final class CaptureSessionManager: NSObject, AVCaptureVideoDataOutputSampleBuffe
                 let shouldAutoScan = (result == .showAndAutoScan)
                 strongSelf.displayRectangleResult(rectangleResult: RectangleDetectorResult(rectangle: rectangle, imageSize: imageSize))
                 if shouldAutoScan, CaptureSession.current.isAutoScanEnabled, !CaptureSession.current.isEditing {
-                    capturePhoto(flashMode: lastFlashMode)
+                    capturePhoto(flashMode: lastFlashMode, torchIsOn: false)
                 }
             }
             
